@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Movie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MovieController extends Controller
 {
@@ -14,7 +15,7 @@ class MovieController extends Controller
     {
         $search = $request->search;
         $movies = Movie::latest()
-            ->where('title', 'genre', 'year', 'like', '%' . $search . '%')
+            ->where('title', 'like', '%' . $search . '%')
             ->get();
         return view('movies.index', ['movies' => $movies]);
     }
