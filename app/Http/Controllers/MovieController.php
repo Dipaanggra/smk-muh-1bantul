@@ -56,24 +56,38 @@ class MovieController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Movie $movie)
     {
-        //
+        return view('movies.edit', ['movie' => $movie]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Movie $movie)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required',
+            'actors' => 'required',
+            'year' => 'required',
+            'trailer' => 'required',
+            'plot' => 'required',
+        ]);
+        if ($request->file('poster')) {
+
+            $validated['poster'] = $request->file('poster')->store('image', 'public');
+            Storage::delete($movie->poster);
+        }
+        $movie->update($validated);
+        return redirect()->route('movies.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Movie $movie)
     {
-        //
+        $movie->delete();
+        return redirect()->route('movies.index');
     }
 }
