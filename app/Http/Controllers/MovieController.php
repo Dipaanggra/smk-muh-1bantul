@@ -10,12 +10,12 @@ class MovieController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $search = $request->search;
-        $movie=Movie::latest()
-        ->where('title','genre','year', 'like', '%' . $search . '%')
-        ->get();
+        $movies = Movie::latest()
+            ->where('title', 'genre', 'year', 'like', '%' . $search . '%')
+            ->get();
         return view('movies.index', ['movies' => $movies]);
     }
 
@@ -24,7 +24,7 @@ class MovieController extends Controller
      */
     public function create()
     {
-        //
+        return view('movies.create');
     }
 
     /**
@@ -32,7 +32,17 @@ class MovieController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required',
+            'actors' => 'required',
+            'year' => 'required',
+            'trailer' => 'required',
+            'poster' => 'required',
+            'plot' => 'required',
+        ]);
+        $validated['poster'] = $request->file('poster')->store('image', 'public');
+        Movie::create($validated);
+        return redirect()->route('movies.index');
     }
 
     /**
